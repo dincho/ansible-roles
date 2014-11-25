@@ -1,0 +1,24 @@
+---
+- name: Create application user
+  user: name={{ symfony_release_project }}
+
+- name: Create release dir
+  file: 
+    path: "/home/{{ symfony_release_project }}/releases"
+    state: directory
+    mode: 0700
+
+- name: Deploying application code
+  unarchive:
+    src: "{{ symfony_release_path }}"
+    dest: "/home/{{ symfony_release_project }}/releases/"
+    copy: yes
+    mode: 0700
+    owner: "{{ symfony_release_project }}"
+
+- name: Link current release
+  file:
+    src: "/home/{{ symfony_release_project }}/releases/{{ symfony_release_name }}"
+    dest: "/home/{{ symfony_release_project }}/releases/current"
+    owner: "{{ symfony_release_project }}"
+    state: link

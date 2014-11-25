@@ -1,0 +1,20 @@
+---
+- name: vhosts configurations exists
+  template:
+    src: vhost.j2
+    dest: /etc/nginx/sites-available/{{ vhost_name }}.conf
+    owner: www-data
+    group: www-data
+    mode: 0600
+  notify:
+    - restart nginx
+
+- name: vhosts are enabled
+  file:
+    path: /etc/nginx/sites-enabled/{{ vhost_name }}.conf
+    src: /etc/nginx/sites-available/{{ vhost_name }}.conf
+    state: link
+    owner: www-data
+    group: www-data
+  notify:
+    - restart nginx

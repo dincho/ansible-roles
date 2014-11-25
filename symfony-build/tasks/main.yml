@@ -1,0 +1,67 @@
+---
+- name: Pull sources from the repository.
+  git:
+    repo: "{{ symfony_build_repo }}"
+    dest: "{{ symfony_build_dir }}"
+    version: "{{ symfony_build_branch }}"
+
+- name: Install composer
+  get_url: 
+    url: https://getcomposer.org/composer.phar
+    dest: "{{ symfony_build_dir }}/composer.phar"
+    mode: 0755
+    validate_certs: no
+
+- name: Install configuration file
+  copy:
+    src: "{{ symfony_build_dir }}/app/config/parameters.yml.dist"
+    dest: "{{ symfony_build_dir }}/app/config/parameters.yml"
+    mode: 0600
+
+- name: Run composer install
+  command: >
+    ./composer.phar install 
+    --no-dev  --ignore-platform-reqs --no-scripts --no-interaction
+    --prefer-dist --optimize-autoloader --quiet
+  args:
+    chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/vendor"
+
+- name: Build symfony bootstrap.cache
+  command: >
+    php ./vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
+  args:
+    chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/app/bootstrap.php.cache"
+
+- name: Run bower install
+  command: >
+    bower install --production --silent
+  args:
+    chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/src/Hobby/Bundle/BaseBundle/Resources/public/vendor"
+
+- name: Install assets
+  command: >
+    {{ symfony_build_dir }}/app/console assets:install --env=prod --quiet
+  args:
+    chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/web/bundles"
+
+- name: Dump JS routes
+  command: >
+    {{ symfony_build_dir }}/app/console fos:js-routing:dump --env=prod
+  args:
+    chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/web/js/fos_js_routes.js"
+
+- name: Dump assetic
+  command: >
+    {{ symfony_build_dir }}/app/console assetic:dump --env=prod
+  args:
+    chdir: "{{ symfony_build_dir }}"
+
+- name: create build archive
+  command: "tar -jcf {{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2 -C {{ symfony_build_dir }}/../ {{ symfony_build_name }}"
+  args:
+    creates: "{{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2"

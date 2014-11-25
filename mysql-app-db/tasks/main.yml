@@ -1,0 +1,16 @@
+---
+- name: app database exists
+  mysql_db:
+    name: "{{ app_name }}"
+    encoding: utf8
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+- name: app database user exists
+  mysql_user:
+    name: "{{ app_name }}"
+    password: "{{ app_name }}"
+    priv: "{{ app_name }}.*:ALL"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present

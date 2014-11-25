@@ -1,0 +1,28 @@
+---
+- name: install xdebug, nodejs, npm, compass
+  apt: pkg={{ item }} state=installed
+  with_items:
+   - php5-xdebug
+   - npm
+   - nodejs-legacy
+   - ruby-compass
+  notify:
+    - restart php-fpm
+
+- name: install bower
+  npm: name=bower global=yes state=present
+
+- name: xdebug.ini exists
+  ini_file: dest=/etc/php5/mods-available/xdebug.ini section=PHP option=extension value=xdebug.so mode=0644
+  notify:
+    - restart php-fpm
+
+- name: xdebug module is enabled
+  command: php5enmod -s fpm xdebug creates=/etc/php5/fpm/conf.d/20-xdebug.ini
+  notify:
+    - restart php-fpm
+
+- name: xdebug configuration
+  ini_file: dest=/etc/php5/fpm/php.ini section=PHP option=xdebug.max_nesting_level value=200
+  notify:
+    - restart php-fpm

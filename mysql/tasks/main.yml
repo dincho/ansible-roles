@@ -1,0 +1,28 @@
+---
+- name: Add Percona apt signing key
+  apt_key: keyserver=keys.gnupg.net id=1C4CBDCDCD2EFD2A state=present
+
+- name: Add Percona repository
+  apt_repository:
+    repo: 'deb http://repo.percona.com/apt {{ ansible_distribution_release }} main'
+    state: present
+
+- name: Add Percona source repository
+  apt_repository:
+    repo: 'deb-src http://repo.percona.com/apt {{ ansible_distribution_release }} main'
+    state: present
+
+- name: Install python packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - python-mysqldb
+
+- name: Install Percona packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - percona-server-server-5.5
+    - percona-server-client-5.5
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  notify:
+    - set mysql root password
