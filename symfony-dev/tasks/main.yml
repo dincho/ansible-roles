@@ -1,11 +1,12 @@
 ---
-- name: install xdebug, nodejs, npm, compass
+- name: install xdebug, nodejs, npm, compass, git
   apt: pkg={{ item }} state=installed
   with_items:
    - php5-xdebug
    - npm
    - nodejs-legacy
    - ruby-compass
+   - git
   notify:
     - restart php-fpm
 
