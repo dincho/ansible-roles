@@ -8,6 +8,7 @@
    - php5-mysql
    - php5-intl
    - php5-curl
+   - php5-imagick
   notify:
     - restart php-fpm
 
@@ -46,4 +47,4 @@
     - restart php-fpm
 
 - name: php5-fpm is running
-  service: name=php5-fpm state=started
+  service: name=php5-fpm state=started enabled=yes
