@@ -2,10 +2,6 @@
 - name: nginx is installed
   apt: pkg=nginx state=installed
 
-- name: copy nginx upstart script
-  copy: src=etc/init/nginx.conf dest=/etc/init/nginx.conf
-    owner=root group=root mode=0644
-
 - name: default vhost does not exists
   file: name=/etc/nginx/{{ item }}/default state=absent
   with_items:
@@ -15,4 +11,4 @@
     - restart nginx
 
 - name: nginx is running
-  service: name=nginx state=started
+  service: name=nginx state=started enabled=yes
