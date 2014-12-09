@@ -60,8 +60,13 @@
     {{ symfony_build_dir }}/app/console assetic:dump --env=prod
   args:
     chdir: "{{ symfony_build_dir }}"
+    creates: "{{ symfony_build_dir }}/web/cache/js/main.js"
+
+- name: set archive path
+  set_fact:
+    symfony_build_archive_path: "{{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2"
 
 - name: create build archive
-  command: "tar -jcf {{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2 -C {{ symfony_build_dir }}/../ {{ symfony_build_name }}"
+  command: "tar -jcf {{ symfony_build_archive_path }} -C {{ symfony_build_dir }}/../ {{ symfony_build_name }}"
   args:
-    creates: "{{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2"
+    creates: "{{ symfony_build_archive_path }}"
