@@ -4,12 +4,12 @@ upstream phpfcgi-{{ vhost_name }} {
 
 server {
     listen 80;
+
     server_name {{ vhost_server_name }};
+    root {{ vhost_webroot }};
 
     access_log /var/log/nginx/{{ vhost_name }}.access_log;
     error_log /var/log/nginx/{{ vhost_name }}.error_log;
-
-    root {{ vhost_webroot }};
 
     # strip app.php/ prefix if it is present
     rewrite ^/app\.php/?(.*)$ /$1 permanent;
