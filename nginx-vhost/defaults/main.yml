@@ -1,0 +1,1 @@
+vhost_phpfcgi_address: unix:/var/run/php5-fpm-{{ vhost_name }}.sock
