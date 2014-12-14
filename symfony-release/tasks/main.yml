@@ -13,9 +13,18 @@
   unarchive:
     src: "{{ symfony_release_path }}"
     dest: "/home/{{ symfony_release_user }}/{{ symfony_release_project }}/releases/"
+    creates: "/home/{{ symfony_release_user }}/{{ symfony_release_project }}/releases/{{ symfony_release_name }}"
     copy: yes
     mode: 0755
     owner: "{{ symfony_release_user }}"
+
+- name: Set correct permissions
+  file:
+    path: "/home/{{ symfony_release_user }}/{{ symfony_release_project }}/releases/{{ symfony_release_name }}"
+    # mode: 0755
+    owner: "{{ symfony_release_user }}"
+    state: directory
+    recurse: true
 
 - name: Link current release
   file:
