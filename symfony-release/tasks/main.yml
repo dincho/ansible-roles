@@ -34,3 +34,11 @@
     state: link
   notify:
     - restart php-fpm
+
+- name: Update database
+  command: >
+    ./app/console doctrine:schema:update --force 
+  args:
+    chdir: "/home/{{ symfony_release_user }}/{{ symfony_release_project }}/releases/current"
+  environment:
+    SYMFONY_ENV: prod
