@@ -32,3 +32,5 @@
     dest: "/home/{{ symfony_release_user }}/{{ symfony_release_project }}/releases/current"
     owner: "{{ symfony_release_user }}"
     state: link
+  notify:
+    - restart php-fpm
