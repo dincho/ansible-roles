@@ -1,0 +1,3 @@
+---
+- name: create archive
+  command: "tar -jcf {{ symfony_build_archive_path }} -C {{ symfony_build_dir }}/../ {{ symfony_build_name }}"

@@ -4,6 +4,8 @@
     repo: "{{ symfony_build_repo }}"
     dest: "{{ symfony_build_dir }}"
     version: "{{ symfony_build_branch }}"
+  notify:
+    - create archive
 
 - name: Run bower install
   command: >
@@ -11,6 +13,8 @@
   args:
     chdir: "{{ symfony_build_dir }}"
     creates: "{{ symfony_build_dir }}/src/Hobby/Bundle/BaseBundle/Resources/public/vendor"
+  notify:
+    - create archive
 
 - name: Install composer
   get_url: 
@@ -18,6 +22,8 @@
     dest: "{{ symfony_build_dir }}/composer.phar"
     mode: 0755
     validate_certs: no
+  notify:
+    - create archive
 
 - name: Run composer install
   command: >
@@ -29,6 +35,8 @@
     creates: "{{ symfony_build_dir }}/vendor"
   environment:
     SYMFONY_ENV: prod
+  notify:
+    - create archive
 
 - name: get cache dirs
   shell: "ls -1 {{ symfony_build_dir }}/app/cache"
@@ -39,15 +47,20 @@
     name: "{{ symfony_build_dir }}/app/cache/{{ item }}"
     state: absent
   with_items: cache.stdout_lines
+  notify:
+    - create archive
+
+- name: configuration
+  template:
+    src: "{{ symfony_build_paramters_path }}"
+    dest: "{{ symfony_build_dir }}/app/config/parameters.yml"
+    mode: 0600
+  notify:
+    - create archive
 
 - name: set archive path
   set_fact:
     symfony_build_archive_path: "{{ symfony_build_dir }}/../{{ symfony_build_name }}.tar.bz2"
-
-- name: create build archive
-  command: "tar -jcf {{ symfony_build_archive_path }} -C {{ symfony_build_dir }}/../ {{ symfony_build_name }}"
-  args:
-    creates: "{{ symfony_build_archive_path }}"
 
 - name: Dump build archive path
   debug: var=symfony_build_archive_path
